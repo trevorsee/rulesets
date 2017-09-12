@@ -2,7 +2,8 @@
 
 function newRuleSet() {
   return {
-    options: {}
+    options: {},
+    conflicts: []
   };
 };
 
@@ -62,6 +63,8 @@ function addConflict(o, t, rs) {
     return;
   }
 
+  // add conflict to main object prop
+  rs.conflicts.push([o, t]);
   // add conflict if it doesn't already exist
   if (!rs.options[o].isInConflictWith.includes(t)) {
     rs.options[o].isInConflictWith.push(t);
@@ -81,9 +84,15 @@ function checkCoherence(rs) {
     for (var _iterator = Object.keys(rs.options)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
       var key = _step.value;
 
-      for (var i = 0; i < rs.options[key].isInConflictWith.length; i++) {
-        // check conflicts against dependencies
-        if (rs.options[key].isDependentOn.includes(rs.options[key].isInConflictWith[i])) {
+      // check against main conflict prop
+      for (var i = 0; i < rs.conflicts.length; i++) {
+        if (rs.options[key].isDependentOn.includes(rs.conflicts[i][0]) && rs.options[key].isDependentOn.includes(rs.conflicts[i][1])) {
+          return false;
+        }
+      }
+      // check conflicts against dependencies
+      for (var _i2 = 0; _i2 < rs.options[key].isInConflictWith.length; _i2++) {
+        if (rs.options[key].isDependentOn.includes(rs.options[key].isInConflictWith[_i2])) {
           return false;
         }
       }
@@ -106,13 +115,30 @@ function checkCoherence(rs) {
   return true;
 }
 
+function toggle(s, o, rs) {
+  console.log(s.o);
+  if (s.o) {
+    var pos = s.indexOf(o);
+    s.splice(pos, 1);
+    //and also any associated options
+    for (var i = 0; i < rs.options[o].isParentTo.length; i++) {
+      var _pos = s.indexOf(rs.options[o].isParentTo[i]);
+      s.splice(_pos, 1);
+    }
+  } else {
+    s.push(o);
+    //and also any associated options
+    for (var _i3 = 0; _i3 < rs.options[o].isDependentOn.length; _i3++) {
+      s.push(rs.options[o].isDependentOn[_i3]);
+    }
+  }
+}
+
 var s = newRuleSet();
 
 addDependency('option A', 'option A', s);
 
 //checkCoherence(s);
 console.assert(checkCoherence(s));
-
-console.log(s.options);
 
 require(['test.js']);

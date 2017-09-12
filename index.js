@@ -1,7 +1,8 @@
 function newRuleSet() {
   return {
     options: {
-    }
+    },
+    conflicts: [],
   }
 };
 
@@ -61,6 +62,8 @@ function addConflict(o, t, rs){
     return;
   }
 
+  // add conflict to main object prop
+  rs.conflicts.push([o,t]);
   // add conflict if it doesn't already exist
   if ( !rs.options[o].isInConflictWith.includes(t) ){
     rs.options[o].isInConflictWith.push(t);
@@ -72,9 +75,15 @@ function addConflict(o, t, rs){
 
 function checkCoherence(rs){
   // loop through each option
-  for (const key of Object.keys(rs.options)) {
+  for ( const key of Object.keys(rs.options) ) {
+    // check against main conflict prop
+    for ( let i=0; i<rs.conflicts.length; i++ ) {
+      if ( rs.options[key].isDependentOn.includes(rs.conflicts[i][0]) && rs.options[key].isDependentOn.includes(rs.conflicts[i][1]) ) {
+        return false;
+      }
+    }
+    // check conflicts against dependencies
     for ( let i=0; i<rs.options[key].isInConflictWith.length;   i++ ) {
-      // check conflicts against dependencies
       if ( rs.options[key].isDependentOn.includes( rs.options[key].isInConflictWith[i] ) ) {
         return false;
       }
@@ -83,14 +92,31 @@ function checkCoherence(rs){
   return true;
 }
 
+function toggle(s, o, rs){
+  console.log(s);
+  if ( s.includes(o) ){
+    let pos = s.indexOf(o);
+    s.splice(pos,1);
+    //and also any associated options
+    for ( let i=0; i<rs.options[o].isParentTo.length; i++ ) {
+      let pos = s.indexOf(rs.options[o].isParentTo[i]);
+      s.splice(pos,1);
+    }
+  } else {
+    s.push(o)
+    //and also any associated options
+    for ( let i=0; i<rs.options[o].isDependentOn.length; i++ ) {
+      s.push(rs.options[o].isDependentOn[i]);
+    }
+  }
+}
+
+
 let s = newRuleSet();
 
 addDependency('option A', 'option A', s);
 
 //checkCoherence(s);
 console.assert( checkCoherence(s) );
-
-console.log(s.options);
-
 
 require(['test.js']);

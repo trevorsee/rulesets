@@ -58,8 +58,9 @@ function setsEqual(a, b) {
 
 selected = set();  // Or list, array, etc.
 
-//toggle(selected, 'a', s);
-//console.assert(setsEqual(selected, set('a', 'c', 'b')));
+console.log(set('a', 'c', 'b'))
+toggle(selected, 'a', s);
+console.assert(setsEqual(selected, set('a', 'c', 'b')));
 
 //s = addDependency('f', 'f', s);
 //selected = toggle(selected, 'f', s);
@@ -91,8 +92,8 @@ addDependency('c', 'd', s);
 addDependency('d', 'e', s);
 addDependency('a', 'f', s);
 addConflict('e', 'f', s);
-// not sure about the answer here
-//console.assert(!checkCoherence(s));
+console.log(s);
+console.assert(!checkCoherence(s));
 
 // Multiple dependencies and exclusions.
 
