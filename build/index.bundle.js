@@ -116,29 +116,33 @@ function checkCoherence(rs) {
 }
 
 function toggle(s, o, rs) {
-  console.log(s.o);
-  if (s.o) {
-    var pos = s.indexOf(o);
-    s.splice(pos, 1);
+  console.log(rs);
+  if (s[o]) {
+    delete s[o];
     //and also any associated options
     for (var i = 0; i < rs.options[o].isParentTo.length; i++) {
-      var _pos = s.indexOf(rs.options[o].isParentTo[i]);
-      s.splice(_pos, 1);
+      delete s[rs.options[o].isParentTo[i]];
     }
   } else {
-    s.push(o);
+    s[o] = true;
+    //toggle any conflicts
+    for (var _i3 = 0; _i3 < rs.options[o].isInConflictWith.length; _i3++) {
+      var current = rs.options[o].isInConflictWith[_i3];
+      delete s[current];
+      for (var j = 0; j < rs.options[current].isParentTo.length; j++) {
+        delete s[rs.options[current].isParentTo[j]];
+      }
+    }
     //and also any associated options
-    for (var _i3 = 0; _i3 < rs.options[o].isDependentOn.length; _i3++) {
-      s.push(rs.options[o].isDependentOn[_i3]);
+    for (var _i4 = 0; _i4 < rs.options[o].isDependentOn.length; _i4++) {
+      var _current2 = rs.options[o].isDependentOn[_i4];
+      s[_current2] = true;
+      for (var _j = 0; _j < rs.options[_current2].isInConflictWith.length; _j++) {
+        delete s[rs.options[_current2].isInConflictWith[_j]];
+      }
     }
   }
+  console.log(s);
 }
-
-var s = newRuleSet();
-
-addDependency('option A', 'option A', s);
-
-//checkCoherence(s);
-console.assert(checkCoherence(s));
 
 require(['test.js']);

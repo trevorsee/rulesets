@@ -93,30 +93,34 @@ function checkCoherence(rs){
 }
 
 function toggle(s, o, rs){
-  console.log(s);
-  if ( s.includes(o) ){
-    let pos = s.indexOf(o);
-    s.splice(pos,1);
+  console.log(rs);
+  if ( s[o] ){
+    delete s[o];
     //and also any associated options
     for ( let i=0; i<rs.options[o].isParentTo.length; i++ ) {
-      let pos = s.indexOf(rs.options[o].isParentTo[i]);
-      s.splice(pos,1);
+      delete s[rs.options[o].isParentTo[i]];
     }
   } else {
-    s.push(o)
+    s[o] = true;
+    //toggle any conflicts
+    for ( let i=0; i<rs.options[o].isInConflictWith.length; i++ ) {
+      let current = rs.options[o].isInConflictWith[i];
+      delete s[current];
+      for ( let j=0; j<rs.options[current].isParentTo.length; j++ ) {
+        delete s[rs.options[current].isParentTo[j]];
+      }
+    }
     //and also any associated options
     for ( let i=0; i<rs.options[o].isDependentOn.length; i++ ) {
-      s.push(rs.options[o].isDependentOn[i]);
+      let current = rs.options[o].isDependentOn[i];
+      s[current] = true;
+      for ( let j=0; j<rs.options[current].isInConflictWith.length; j++ ) {
+        delete s[rs.options[current].isInConflictWith[j]];
+      }
     }
+
   }
+  console.log(s);
 }
-
-
-let s = newRuleSet();
-
-addDependency('option A', 'option A', s);
-
-//checkCoherence(s);
-console.assert( checkCoherence(s) );
 
 require(['test.js']);

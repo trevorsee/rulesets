@@ -57,32 +57,32 @@ function setsEqual(a, b) {
 }
 
 selected = set();  // Or list, array, etc.
-
-console.log(set('a', 'c', 'b'))
 toggle(selected, 'a', s);
 console.assert(setsEqual(selected, set('a', 'c', 'b')));
 
-//s = addDependency('f', 'f', s);
-//selected = toggle(selected, 'f', s);
-//console.assert(setsEqual(selected, set('a', 'c', 'b', 'f')));
+addDependency('f', 'f', s);
+toggle(selected, 'f', s);
+console.assert(setsEqual(selected, set('a', 'c', 'b', 'f')));
 
-//selected = toggle(selected, 'e', s);
-//console.assert(setsEqual(selected, set('e', 'f')));
+toggle(selected, 'e', s);
+console.assert(setsEqual(selected, set('e', 'f')));
 
-//selected = toggle(selected, 'b', s);
-//console.assert(setsEqual(selected, set('a', 'c', 'b', 'f')));
+toggle(selected, 'b', s);
+console.assert(setsEqual(selected, set('a', 'c', 'b', 'f')));
 
-//s = addDependency('b', 'g', s);
-//selected = toggle(selected, 'g', s);
-//selected = toggle(selected, 'b', s);
-//console.assert(setsEqual(selected, set('g', 'f')));
+addDependency('b', 'g', s);
+toggle(selected, 'g', s);
+//console.log('here')
+//console.log(selected)
+toggle(selected, 'b', s);
+console.assert(setsEqual(selected, set('g', 'f')));
 
-//s = newRuleSet();
-//s = addDependency('a', 'b', s);
-//s = addDependency('b', 'c', s);
-//selected = set();
-//selected = toggle(selected, 'c', s);
-//console.assert(setsEqual(selected, set('c')));
+s = newRuleSet();
+addDependency('a', 'b', s);
+addDependency('b', 'c', s);
+selected = set();
+toggle(selected, 'c', s);
+console.assert(setsEqual(selected, set('c')));
 
 // Deep dependencies
 s = newRuleSet();
@@ -92,7 +92,6 @@ addDependency('c', 'd', s);
 addDependency('d', 'e', s);
 addDependency('a', 'f', s);
 addConflict('e', 'f', s);
-console.log(s);
 console.assert(!checkCoherence(s));
 
 // Multiple dependencies and exclusions.
@@ -103,8 +102,8 @@ addDependency('a', 'c', s);
 addConflict('b', 'd', s);
 addConflict('b', 'e', s);
 console.assert(checkCoherence(s));
-//selected = set();
-//selected = toggle(selected, 'd', s);
-//selected = toggle(selected, 'e', s);
-//selected = toggle(selected, 'a', s);
-//console.assert(setsEqual(selected, set('a', 'c', 'b')));
+selected = set();
+toggle(selected, 'd', s);
+toggle(selected, 'e', s);
+toggle(selected, 'a', s);
+console.assert(setsEqual(selected, set('a', 'c', 'b')));
