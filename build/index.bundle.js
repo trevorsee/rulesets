@@ -22,6 +22,11 @@ function addDependency(o, t, rs) {
   // check that target-option exists
   addOption(t, rs);
 
+  // ignore if o = t
+  if (o == t) {
+    return;
+  }
+
   // add dependency if it doesn't already exist
   if (!rs.options[o].isDependentOn.includes(t)) {
     rs.options[o].isDependentOn.push(t);
@@ -51,6 +56,12 @@ function addConflict(o, t, rs) {
   addOption(o, rs);
   // check that target-option exists
   addOption(t, rs);
+
+  // ignore if o = t
+  if (o == t) {
+    return;
+  }
+
   // add conflict if it doesn't already exist
   if (!rs.options[o].isInConflictWith.includes(t)) {
     rs.options[o].isInConflictWith.push(t);
@@ -97,9 +108,7 @@ function checkCoherence(rs) {
 
 var s = newRuleSet();
 
-addDependency('option A', 'option B', s);
-addDependency('option B', 'option C', s);
-addConflict('option A', 'option D', s);
+addDependency('option A', 'option A', s);
 
 //checkCoherence(s);
 console.assert(checkCoherence(s));
