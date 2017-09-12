@@ -114,3 +114,5 @@ addDependency('option A', 'option A', s);
 console.assert(checkCoherence(s));
 
 console.log(s.options);
+
+require(['test.js']);

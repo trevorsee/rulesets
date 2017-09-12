@@ -55,7 +55,7 @@ function addConflict(o, t, rs){
   addOption(o, rs);
   // check that target-option exists
   addOption(t, rs);
-  
+
   // ignore if o = t
   if ( o == t ) {
     return;
@@ -91,3 +91,6 @@ addDependency('option A', 'option A', s);
 console.assert( checkCoherence(s) );
 
 console.log(s.options);
+
+
+require(['test.js']);
