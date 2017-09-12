@@ -60,12 +60,25 @@ function addConflict(o, t, rs){
 }
 
 function checkCoherence(rs){
+  // loop through each option
+  for (const key of Object.keys(rs.options)) {
+    for ( let i=0; i<rs.options[key].isInConflictWith.length; i++ ) {
+      // check conflicts against dependencies
+      if ( rs.options[key].isDependentOn.includes( rs.options[key].isInConflictWith[i] ) ) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 let s = newRuleSet();
 
 addDependency('option A', 'option B', s);
 addDependency('option B', 'option C', s);
-addConflict('option A', 'option C', s);
+addConflict('option A', 'option D', s);
+
+//checkCoherence(s);
+console.assert( checkCoherence(s) );
 
 console.log(s.options);

@@ -60,12 +60,48 @@ function addConflict(o, t, rs) {
   }
 }
 
-function checkCoherence(rs) {}
+function checkCoherence(rs) {
+  // loop through each option
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = Object.keys(rs.options)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var key = _step.value;
+
+      for (var i = 0; i < rs.options[key].isInConflictWith.length; i++) {
+        // check conflicts against dependencies
+        if (rs.options[key].isDependentOn.includes(rs.options[key].isInConflictWith[i])) {
+          return false;
+        }
+      }
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
+  return true;
+}
 
 var s = newRuleSet();
 
 addDependency('option A', 'option B', s);
 addDependency('option B', 'option C', s);
-addConflict('option A', 'option C', s);
+addConflict('option A', 'option D', s);
+
+//checkCoherence(s);
+console.assert(checkCoherence(s));
 
 console.log(s.options);
