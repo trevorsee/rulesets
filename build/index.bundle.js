@@ -10,7 +10,8 @@ function addOption(title, rs) {
   if (!rs.options[title]) {
     rs.options[title] = {
       isParentTo: [],
-      isDependentOn: []
+      isDependentOn: [],
+      isInConflictWith: []
     };
   }
 }
@@ -45,15 +46,26 @@ function addDependency(o, t, rs) {
   }
 }
 
-function addConflict(o, t, rs) {}
+function addConflict(o, t, rs) {
+  // check that option exists
+  addOption(o, rs);
+  // check that target-option exists
+  addOption(t, rs);
+  // add conflict if it doesn't already exist
+  if (!rs.options[o].isInConflictWith.includes(t)) {
+    rs.options[o].isInConflictWith.push(t);
+  }
+  if (!rs.options[t].isInConflictWith.includes(o)) {
+    rs.options[t].isInConflictWith.push(o);
+  }
+}
 
 function checkCoherence(rs) {}
 
 var s = newRuleSet();
 
 addDependency('option A', 'option B', s);
-addDependency('option A', 'option B', s);
 addDependency('option B', 'option C', s);
-addDependency('option C', 'option D', s);
+addConflict('option A', 'option C', s);
 
 console.log(s.options);
