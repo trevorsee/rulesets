@@ -19,6 +19,29 @@ function addDependency(o, t, rs){
   addOption(o, rs);
   // check that target-option exists
   addOption(t, rs);
+
+  // add dependency if it doesn't already exist
+  if ( !rs.options[o].isDependentOn.includes(t) ){
+    rs.options[o].isDependentOn.push(t);
+  }
+  // check all options associated, add dependency
+  for ( let i=0; i<rs.options[o].isParentTo.length; i++ ) {
+    let current = rs.options[o].isParentTo[i];
+    if ( !rs.options[current].isDependentOn.includes(t) ){
+      rs.options[current].isDependentOn.push(t);
+    }
+  }
+  // add parent-role to target-option
+  if ( !rs.options[t].isParentTo.includes(o) ){
+    rs.options[t].isParentTo.push(o);
+  }
+  // check for other necessary parent-roles
+  for ( let i=0; i<rs.options[o].isParentTo.length; i++ ) {
+    let current = rs.options[o].isParentTo[i];
+    if ( !rs.options[t].isParentTo.includes(current) ){
+      rs.options[t].isParentTo.push(current);
+    }
+  }
 }
 
 function addConflict(o, t, rs){
@@ -29,6 +52,9 @@ function checkCoherence(rs){
 
 let s = newRuleSet();
 
-addDependency('option A', 'option B', s)
+addDependency('option A', 'option B', s);
+addDependency('option A', 'option B', s);
+addDependency('option B', 'option C', s);
+addDependency('option C', 'option D', s);
 
 console.log(s.options);
