@@ -9,7 +9,7 @@ npm install
 
 package js
 ```
-npm run bundle
+npm run babel
 ```
 
 run local server
